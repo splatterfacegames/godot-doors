@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+  <Style src="hud.uss" />
+  <ui:VisualElement name="root" class="root" picking-mode="Ignore">
+    <ui:VisualElement name="status" class="panel status" picking-mode="Ignore">
+      <ui:Label name="clock" class="clock" text="21:54" />
+      <ui:Label name="place" class="place" text="Kitchen" />
+      <ui:Label name="obj_head" class="head" text="Tonight" />
+      <ui:Label name="obj0" class="obj" text="" />
+      <ui:Label name="obj1" class="obj" text="" />
+      <ui:Label name="obj2" class="obj" text="" />
+      <ui:Label name="obj3" class="obj" text="" />
+    </ui:VisualElement>
+    <ui:VisualElement name="suspicion" class="panel suspicion" picking-mode="Ignore">
+      <ui:Label name="sus_label" class="head" text="Suspicion" />
+      <ui:VisualElement name="sus_track" class="track">
+        <ui:VisualElement name="sus_fill" class="fill" />
+      </ui:VisualElement>
+      <ui:Label name="admission" class="admission" text="" />
+    </ui:VisualElement>
+    <ui:VisualElement name="log" class="panel log" picking-mode="Ignore">
+      <ui:Label name="log_head" class="head" text="Overheard" />
+      <ui:Label name="log0" class="line" text="" />
+      <ui:Label name="log1" class="line" text="" />
+      <ui:Label name="log2" class="line" text="" />
+      <ui:Label name="log3" class="line" text="" />
+      <ui:Label name="log4" class="line" text="" />
+      <ui:Label name="log5" class="line" text="" />
+      <ui:Label name="log6" class="line" text="" />
+    </ui:VisualElement>
+    <ui:Label name="toast" class="toast" text="" />
+    <ui:VisualElement name="bottom" class="bottom" picking-mode="Ignore">
+      <ui:VisualElement name="chore_track" class="chore-track hidden">
+        <ui:VisualElement name="chore_fill" class="chore-fill" />
+      </ui:VisualElement>
+      <ui:Label name="prompt" class="prompt hidden" text="" />
+    </ui:VisualElement>
+    <ui:VisualElement name="title_screen" class="overlay">
+      <ui:VisualElement class="card">
+        <ui:Label class="kicker" text="godot-doors · a playable demo" />
+        <ui:Label name="title" class="title" text="The Door Problem" />
+        <ui:Label class="subtitle" text="Ashcombe House, one night" />
+        <ui:Label class="blurb" text="You are the new maid. Tonight the master has a visitor, the mistress is writing a letter, and every door in the house is listening back. Learn what the house is hiding before the house learns what you are doing." />
+        <ui:Button name="start" class="btn primary" text="Begin the night" />
+        <ui:Button name="controls" class="btn" text="Controls" />
+      </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="help_screen" class="overlay hidden">
+      <ui:VisualElement class="card">
+        <ui:Label class="title small" text="Controls" />
+        <ui:Label class="keys" text="WASD / arrows: walk     Shift: sneak (doors open quietly)&#10;E: open, close, unlock, use     hold E: chores&#10;F: knock     G: leave a door ajar     L: lock or unlock&#10;hold R: listen at a door     hold T: peek through a keyhole&#10;Z / X: turn the camera     Esc: pause" />
+        <ui:Label class="blurb" text="Chores make you ON DUTY in a room: the house does not see its staff. Anywhere else private, being found is a discovery. Doors you leave ajar get noticed. Sound carries through doors, worse through closed ones, better through ajar ones, best at a keyhole you are pressed against." />
+        <ui:Button name="resume" class="btn primary" text="Back" />
+      </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="end_screen" class="overlay hidden">
+      <ui:VisualElement class="card">
+        <ui:Label name="end_title" class="title" text="" />
+        <ui:Label name="end_body" class="blurb" text="" />
+        <ui:Button name="restart" class="btn primary" text="Play the night again" />
+      </ui:VisualElement>
+    </ui:VisualElement>
+  </ui:VisualElement>
+</ui:UXML>

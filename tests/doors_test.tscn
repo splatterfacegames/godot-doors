@@ -1,0 +1,156 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://tests/doors_test.gd" id="1_test"]
+[ext_resource type="Script" path="res://addons/rooms_and_doors/room_area.gd" id="2_room"]
+[ext_resource type="PackedScene" path="res://addons/rooms_and_doors/Door.tscn" id="3_door"]
+[ext_resource type="Script" path="res://addons/rooms_and_doors/key_item.gd" id="4_key"]
+[ext_resource type="Script" path="res://addons/rooms_and_doors/npc_door_agent.gd" id="5_agent"]
+
+[sub_resource type="BoxShape3D" id="Box_corridor"]
+size = Vector3(12, 3, 3)
+
+[sub_resource type="BoxShape3D" id="Box_room"]
+size = Vector3(6, 3, 5)
+
+[sub_resource type="BoxShape3D" id="Box_outside"]
+size = Vector3(12, 3, 5)
+
+[sub_resource type="CapsuleShape3D" id="Capsule"]
+radius = 0.3
+height = 1.7
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh"]
+radius = 0.3
+height = 1.7
+
+[sub_resource type="BoxMesh" id="Floor"]
+size = Vector3(12, 0.1, 18)
+
+[node name="DoorsTest" type="Node3D"]
+script = ExtResource("1_test")
+
+[node name="Floor" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 2.5)
+mesh = SubResource("Floor")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.5, 0.866025, 0, -0.866025, 0.5, 0, 16, 11)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 10, 0)
+
+[node name="Rooms" type="Node3D" parent="."]
+
+[node name="Corridor" type="Area3D" parent="Rooms"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+script = ExtResource("2_room")
+room_id = &"manor/corridor"
+display_name = "Corridor"
+anchor = Vector3(0, -0.5, 0)
+
+[node name="Shape" type="CollisionShape3D" parent="Rooms/Corridor"]
+shape = SubResource("Box_corridor")
+
+[node name="Study" type="Area3D" parent="Rooms"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 1.5, 4)
+script = ExtResource("2_room")
+room_id = &"manor/study"
+display_name = "Study"
+privacy = 3
+owner_id = &"lord"
+anchor = Vector3(0, -0.5, 0.5)
+
+[node name="Shape" type="CollisionShape3D" parent="Rooms/Study"]
+shape = SubResource("Box_room")
+
+[node name="Bedroom" type="Area3D" parent="Rooms"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 1.5, 9)
+script = ExtResource("2_room")
+room_id = &"manor/bedroom"
+display_name = "Bedroom"
+privacy = 4
+owner_id = &"lady"
+anchor = Vector3(0, -0.5, 1)
+
+[node name="Shape" type="CollisionShape3D" parent="Rooms/Bedroom"]
+shape = SubResource("Box_room")
+
+[node name="Outside" type="Area3D" parent="Rooms"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -4)
+script = ExtResource("2_room")
+room_id = &"@outside"
+display_name = "Outside"
+anchor = Vector3(0, -0.5, -0.5)
+
+[node name="Shape" type="CollisionShape3D" parent="Rooms/Outside"]
+shape = SubResource("Box_outside")
+
+[node name="Doors" type="Node3D" parent="."]
+
+[node name="StudyDoor" parent="Doors" instance=ExtResource("3_door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 1.5)
+door_id = &"manor/study_door"
+room_a = &"manor/corridor"
+room_b = &"manor/study"
+key_id = &"study_key"
+locked_initially = true
+sight_factor = 0.15
+
+[node name="BedroomDoor" parent="Doors" instance=ExtResource("3_door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 6.5)
+door_id = &"manor/bedroom_door"
+room_a = &"manor/study"
+room_b = &"manor/bedroom"
+key_id = &"bedroom_key"
+lock_side = &"manor/bedroom"
+
+[node name="FrontDoor" parent="Doors" instance=ExtResource("3_door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, -1.5)
+door_id = &"manor/front_door"
+room_a = &"@outside"
+room_b = &"manor/corridor"
+sound_level = 0.6
+
+[node name="Passkey" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0.8)
+script = ExtResource("4_key")
+key_id = &"passkey"
+opens = PackedStringArray("study_key", "bedroom_key")
+label = "Housekeeper's passkey"
+
+[node name="Characters" type="Node3D" parent="."]
+
+[node name="Player" type="CharacterBody3D" parent="Characters"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 1, 0)
+
+[node name="Shape" type="CollisionShape3D" parent="Characters/Player"]
+shape = SubResource("Capsule")
+
+[node name="Mesh" type="MeshInstance3D" parent="Characters/Player"]
+mesh = SubResource("CapsuleMesh")
+
+[node name="Son" type="CharacterBody3D" parent="Characters"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1, 0)
+
+[node name="Shape" type="CollisionShape3D" parent="Characters/Son"]
+shape = SubResource("Capsule")
+
+[node name="Mesh" type="MeshInstance3D" parent="Characters/Son"]
+mesh = SubResource("CapsuleMesh")
+
+[node name="Agent" type="Node" parent="Characters/Son"]
+script = ExtResource("5_agent")
+character_id = &"son"
+
+[node name="Housekeeper" type="CharacterBody3D" parent="Characters"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0)
+
+[node name="Shape" type="CollisionShape3D" parent="Characters/Housekeeper"]
+shape = SubResource("Capsule")
+
+[node name="Mesh" type="MeshInstance3D" parent="Characters/Housekeeper"]
+mesh = SubResource("CapsuleMesh")
+
+[node name="Agent" type="Node" parent="Characters/Housekeeper"]
+script = ExtResource("5_agent")
+character_id = &"housekeeper"

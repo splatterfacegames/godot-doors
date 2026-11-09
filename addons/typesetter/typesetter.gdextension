@@ -1,0 +1,16 @@
+[configuration]
+entry_symbol = "gdext_rust_init"
+compatibility_minimum = 4.7
+reloadable = true
+
+[libraries]
+; One optimized build serves editor and exported runs alike.
+; Build with: python native/build.py
+windows.debug.x86_64 = "res://addons/typesetter/bin/typesetter_native.windows.x86_64.dll"
+windows.release.x86_64 = "res://addons/typesetter/bin/typesetter_native.windows.x86_64.dll"
+linux.debug.x86_64 = "res://addons/typesetter/bin/libtypesetter_native.linux.x86_64.so"
+linux.release.x86_64 = "res://addons/typesetter/bin/libtypesetter_native.linux.x86_64.so"
+macos.debug.arm64 = "res://addons/typesetter/bin/libtypesetter_native.macos.arm64.dylib"
+macos.release.arm64 = "res://addons/typesetter/bin/libtypesetter_native.macos.arm64.dylib"
+web.debug.wasm32 = "res://addons/typesetter/bin/typesetter_native.wasm"
+web.release.wasm32 = "res://addons/typesetter/bin/typesetter_native.wasm"

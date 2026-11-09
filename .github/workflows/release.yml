@@ -1,0 +1,56 @@
+name: Release
+
+# Push a vX.Y.Z tag: export Ashcombe House for the web, Linux and Windows and
+# publish them, with the addon on its own, as a GitHub release.
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  GODOT_VERSION: 4.7.2
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Godot and its export templates
+        run: |
+          curl -L --fail --output godot.zip \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          curl -L --fail --output templates.tpz \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
+          unzip -q godot.zip
+          sudo mv "Godot_v${GODOT_VERSION}-stable_linux.x86_64" /usr/local/bin/godot
+          unzip -q templates.tpz -d /tmp/godot-templates
+          mkdir -p "$HOME/.local/share/godot/export_templates"
+          mv /tmp/godot-templates/templates "$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.stable"
+      - name: Import and test
+        run: |
+          godot --headless --path . --import || godot --headless --path . --import
+          godot --headless --path . res://tests/doors_test.tscn
+      - name: Export
+        run: |
+          mkdir -p build/web build/linux build/windows dist
+          godot --headless --path . --export-release Web build/web/index.html
+          godot --headless --path . --export-release Linux build/linux/ashcombe-house.x86_64
+          godot --headless --path . --export-release Windows build/windows/ashcombe-house.exe
+          (cd build/web && zip -qr ../../dist/ashcombe-house-web.zip .)
+          (cd build/linux && zip -qr ../../dist/ashcombe-house-linux-x86_64.zip .)
+          (cd build/windows && zip -qr ../../dist/ashcombe-house-windows-x86_64.zip .)
+          zip -qr dist/rooms_and_doors-addon.zip addons/rooms_and_doors
+          ls -la dist
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          if [ "${GITHUB_EVENT_NAME}" != "push" ]; then TAG="$(git describe --tags --abbrev=0)"; fi
+          gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --title "godot-doors $TAG" --notes-file docs/RELEASE_NOTES.md
+          gh release upload "$TAG" dist/*.zip --clobber
