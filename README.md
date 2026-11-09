@@ -123,7 +123,13 @@ Every rule in the demo comes from the addon:
   you suspicion.
 
 The house is built from a data table (`demo/manor_layout.gd`): walls are generated
-around the room rectangles, with openings where the doors are. The cast are
+around the room rectangles, with openings where the doors are. A navigation mesh is
+baked from the result at startup. Walls, furniture and closed doors are obstacles, so
+each room is its own island. NPCs path around furniture inside a room and cross a
+doorway in a straight line, and only when `NpcDoorAgent` says the door is open. The smoke
+run counts any frame where a walking NPC is inside furniture and fails if there is one.
+`-- --no-nav` turns the mesh off for comparison: with it off, the same night has 36
+such frames. The cast are
 `Mannequin`s (`demo/mannequin.gd`), jointed figures made from primitives with a
 procedural walk and poses for listening, peeking, knocking, working, sitting, reading
 and sleeping. No art assets are needed.

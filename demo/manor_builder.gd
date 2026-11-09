@@ -18,6 +18,9 @@ var doors: Dictionary = {}       # door_id -> Door
 var props: Dictionary = {}       # prop_id -> Node3D
 var room_areas: Dictionary = {}  # room_id -> RoomArea
 var font: TypesetterFontAsset
+var nav_region: NavigationRegion3D
+## Off: NPCs walk straight lines (the old behaviour; kept for comparison runs).
+var use_navigation: bool = true
 
 
 func build(parent: Node3D) -> void:
@@ -40,6 +43,47 @@ func build(parent: Node3D) -> void:
 		_prop(p)
 	for r in ManorLayout.ROOMS:
 		_sign(r)
+	_bake_navigation()
+
+
+## A navigation mesh baked from the generated house: floors are walkable; walls,
+## furniture and the (closed) doors are obstacles, so each room is its own island.
+## NPCs path inside a room on it and cross doorways in a straight line, because
+## whether a doorway can be crossed is the door system's decision, not the mesh's.
+func _bake_navigation() -> void:
+	var nm := NavigationMesh.new()
+	nm.geometry_parsed_geometry_type = NavigationMesh.PARSED_GEOMETRY_STATIC_COLLIDERS
+	nm.geometry_collision_mask = LAYER_WORLD
+	nm.geometry_source_geometry_mode = NavigationMesh.SOURCE_GEOMETRY_GROUPS_WITH_CHILDREN
+	nm.geometry_source_group_name = &"manor_nav_source"
+	nm.cell_size = 0.1
+	nm.cell_height = 0.1
+	nm.agent_radius = 0.3
+	nm.agent_height = 1.7
+	nm.agent_max_climb = 0.2
+	root.add_to_group(&"manor_nav_source")
+	var source := NavigationMeshSourceGeometryData3D.new()
+	NavigationServer3D.parse_source_geometry_data(nm, source, root)
+	NavigationServer3D.bake_from_source_geometry_data(nm, source)
+	nav_region = NavigationRegion3D.new()
+	nav_region.name = "Navigation"
+	nav_region.navigation_mesh = nm
+	root.add_child(nav_region)
+
+
+## Points to walk from `from` to `to` inside one room, around furniture. Ends exactly
+## at `to` (a spot on a bed or a chair is off the mesh; the last step goes onto it).
+## Falls back to a straight line before the map has synced.
+func room_path(from: Vector3, to: Vector3) -> Array[Vector3]:
+	var out: Array[Vector3] = []
+	var map := root.get_world_3d().navigation_map
+	if use_navigation and NavigationServer3D.map_get_iteration_id(map) > 0:
+		var pts := NavigationServer3D.map_get_path(map, from, to, true)
+		for i in range(1, pts.size()):
+			out.append(Vector3(pts[i].x, 0.0, pts[i].z))
+	if out.is_empty() or Vector2(out[-1].x - to.x, out[-1].z - to.z).length() > 0.05:
+		out.append(Vector3(to.x, 0.0, to.z))
+	return out
 
 
 func _environment() -> void:

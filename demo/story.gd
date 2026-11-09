@@ -81,7 +81,7 @@ func _schedule() -> void:
 	_at(205.0, func():
 		lady.clear_tasks()
 		lady.push({ "kind": "say", "text": "Enough. Bed." })
-		lady.push({ "kind": "go", "spot": &"lady_bed" })
+		lady.push({ "kind": "go", "spot": &"lady_bedside" })
 		lady.push({ "kind": "door", "door": &"bed_door", "op": "close" })
 		lady.push({ "kind": "wait", "seconds": 0.6 })
 		lady.push({ "kind": "door", "door": &"bed_door", "op": "lock" })

@@ -58,7 +58,7 @@
           </dl>
         </div>
         <figure class="reel">
-          <video class="reel-video" src="/reel.mp4?v=1" poster="/img/listening.webp" width="1280" height="720" autoplay muted loop playsinline preload="metadata" aria-label="Fifty-six seconds of Ashcombe House: a visitor knocks and is admitted to the study; the maid hears voices through the closed door as dots, then listens and catches the words; the debug overlay shows the room graph; later she opens the servants' jib door quietly, passes the sleeping mistress and reads the letter in the dressing room."></video>
+          <video class="reel-video" src="/reel.mp4?v=2" poster="/img/listening.webp" width="1280" height="720" autoplay muted loop playsinline preload="metadata" aria-label="Fifty-six seconds of Ashcombe House: a visitor knocks and is admitted to the study; the maid hears voices through the closed door as dots, then listens and catches the words; the debug overlay shows the room graph; later she opens the servants' jib door quietly, passes the sleeping mistress and reads the letter in the dressing room."></video>
           <figcaption>
             The demo, recorded with Godot's Movie Maker and the Compatibility
             renderer, as on the web. The cast are procedural mannequins; no art
@@ -209,7 +209,8 @@
             <a href="https://godot-uxml.splatterfacegames.com">godot-uxml</a>;
             room names and speech are
             <a href="https://godot-typesetter.splatterfacegames.com">Typesetter</a>
-            text; the house is generated from a table of rooms and doors.
+            text; the house is generated from a table of rooms and doors, and
+            the NPCs path on a navigation mesh baked from it at startup.
             Desktop builds are on the
             <a href="https://github.com/splatterfacegames/godot-doors/releases">releases page</a>.
           </p>
@@ -262,7 +263,7 @@ RoomsAndDoors.discovery.connect(func(who, finder, room, ctx):
           <div>
             <h3>Not built</h3>
             <ul>
-              <li>Navigation meshes: demo NPCs walk straight lines inside rectangular rooms and do not avoid furniture.</li>
+              <li>Crowd avoidance: demo NPCs path around furniture on a baked navigation mesh, but not around each other or the player.</li>
               <li>Art: the house is boxes and the cast are mannequins, by design.</li>
               <li>A 2D demo. <code>RoomArea2D</code> exists; the ajar sight cone is 3D only.</li>
               <li>Lockpicking, multiplayer and networking are out of scope.</li>

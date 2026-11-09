@@ -64,6 +64,7 @@ const SPOTS := {
 	&"study_mid": [&"study", Vector2(6, -2.0), 0.0],
 	&"lady_desk": [&"bedchamber", Vector2(3.0, 5.0), 0.0],
 	&"lady_bed": [&"bedchamber", Vector2(6.5, 7.5), 0.0],
+	&"lady_bedside": [&"bedchamber", Vector2(4.7, 7.5), 90.0],
 	&"cook_range": [&"kitchen", Vector2(-10.6, -4.5), 90.0],
 	&"cook_table": [&"kitchen", Vector2(-8, -1.8), 180.0],
 	&"hall_mid": [&"hall", Vector2(0, -2.5), 0.0],

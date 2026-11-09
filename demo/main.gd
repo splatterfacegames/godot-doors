@@ -22,6 +22,27 @@ var rig: ManorCamera
 var npcs: Dictionary = {}
 var _args: Dictionary = {}
 var _clips: Array = []
+var _furniture_frames: int = 0
+var _furniture_hits: Dictionary = {}
+
+
+## Smoke check: an NPC walking (not settling onto a bed or chair at the end of a
+## sit/read/sleep task) must never be inside a piece of furniture.
+func _count_furniture_walks() -> void:
+	for id in npcs:
+		var n: ManorNpc = npcs[id]
+		if n._waypoints.is_empty():
+			continue
+		var kind := String(n._task.get("kind", ""))
+		if kind in ["sit", "read", "sleep"] and n._waypoints.size() == 1:
+			continue
+		var p := Vector2(n.global_position.x, n.global_position.z)
+		for f in ManorLayout.FURNITURE:
+			var half := Vector2((f["size"] as Vector3).x, (f["size"] as Vector3).z) * 0.5 + Vector2(0.12, 0.12)
+			var c: Vector2 = f["pos"]
+			if absf(p.x - c.x) < half.x and absf(p.y - c.y) < half.y:
+				_furniture_frames += 1
+				_furniture_hits["%s@%s" % [id, String(f.get("tag", "furniture"))]] = true
 
 
 func _ready() -> void:
@@ -34,6 +55,7 @@ func _ready() -> void:
 	R.time_scale = 1.0
 	R.start_hour = 21.9
 	R.instant_doors = false
+	builder.use_navigation = not _args.has("no-nav")
 	builder.build(self)
 	_spawn_household()
 	rig = ManorCamera.new()
@@ -250,6 +272,7 @@ func _smoke() -> void:
 	RoomsAndDoors.door_clip_detected.connect(func(c, a, b): _clips.append([c, a, b]))
 	Engine.time_scale = 6.0
 	Engine.physics_ticks_per_second = 60
+	get_tree().physics_frame.connect(_count_furniture_walks)
 	_start()
 	var errors := 0
 	await _until(func(): return story._conv_started_at > 0.0, 200.0)
@@ -285,6 +308,9 @@ func _smoke() -> void:
 	if not story._over:
 		errors += 1
 	var clips: int = _clips.size()
+	print("[smoke] NPC frames walking inside furniture: %d %s" % [_furniture_frames, str(_furniture_hits.keys())])
+	if _furniture_frames > 0 and builder.use_navigation:
+		errors += 1
 	print("[smoke] door clips flagged: %d %s; trespass entries: %d" % [clips, str(_clips.slice(0, 4)), RoomsAndDoors.trespass_log().size()])
 	print("[smoke] %s" % ("OK" if errors == 0 else "FAILED (%d)" % errors))
 	get_tree().quit(errors)

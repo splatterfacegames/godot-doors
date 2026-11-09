@@ -164,7 +164,7 @@ func _finish_task() -> void:
 func _on_approaching(door_id: StringName) -> void:
 	var door: Door = builder.doors[door_id]
 	var here := RoomsAndDoors.room_of(character_id)
-	_waypoints = [_door_point(door, here, 0.95)]
+	_waypoints = builder.room_path(global_position, _door_point(door, here, 0.95))
 	_face_yaw = NAN
 
 
@@ -180,7 +180,7 @@ func _on_arrived(_room: StringName) -> void:
 	if spot == &"":
 		_finish_task()
 		return
-	_waypoints = [ManorLayout.spot_position(spot)]
+	_waypoints = builder.room_path(global_position, ManorLayout.spot_position(spot))
 	_face_yaw = ManorLayout.SPOTS[spot][2]
 
 
