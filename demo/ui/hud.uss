@@ -58,8 +58,10 @@
 .title.small { font-size: 26px; }
 .subtitle { font-size: 15px; color: var(--dim); margin-bottom: 14px; }
 .blurb { font-size: 14px; color: var(--ink); white-space: normal; margin-bottom: 18px; }
+.blurb.intro { min-height: 72px; }
 .keys { font-size: 14px; color: var(--ink); white-space: normal; margin-top: 10px; margin-bottom: 14px; }
 .btn {
+  -unity-text-align: middle-center;
   height: 38px; margin-top: 8px; font-size: 15px; color: var(--ink);
   background-color: rgba(255, 255, 255, 0.08); border-radius: 5px; border-width: 1px;
   border-color: rgba(217, 163, 91, 0.4);

@@ -40,7 +40,7 @@
         <ui:Label class="kicker" text="godot-doors · a playable demo" />
         <ui:Label name="title" class="title" text="The Door Problem" />
         <ui:Label class="subtitle" text="Ashcombe House, one night" />
-        <ui:Label class="blurb" text="You are the new maid. Tonight the master has a visitor, the mistress is writing a letter, and every door in the house is listening back. Learn what the house is hiding before the house learns what you are doing." />
+        <ui:Label class="blurb intro" text="You are the new maid. Tonight the master has a visitor, the mistress is writing a letter, and every door in the house is listening back. Learn what the house is hiding before the house learns what you are doing." />
         <ui:Button name="start" class="btn primary" text="Begin the night" />
         <ui:Button name="controls" class="btn" text="Controls" />
       </ui:VisualElement>
