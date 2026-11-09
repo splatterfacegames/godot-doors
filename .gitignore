@@ -2,3 +2,6 @@
 /build/
 /shots/
 *.tmp
+
+site/dist/
+site/.r2-upload/

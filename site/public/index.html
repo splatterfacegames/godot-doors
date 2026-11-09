@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="godot-doors is a rooms and doors system for Godot 4: who may pass, who can hear, who can see, who knocks and who gets caught. Play Ashcombe House, the demo, in your browser." />
+    <meta name="theme-color" content="#0f0d14" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="The Door Problem: rooms and doors for Godot 4" />
+    <meta property="og:description" content="One authority for every door: access, hearing, sight, knocking, discovery and the rooms that keep living while you are elsewhere. With a playable night at Ashcombe House." />
+    <meta property="og:url" content="https://doorproblem.splatterfacegames.com" />
+    <meta property="og:image" content="https://doorproblem.splatterfacegames.com/img/og-card.png" />
+    <link rel="canonical" href="https://doorproblem.splatterfacegames.com" />
+    <link rel="icon" href="/mark.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" />
+    <link rel="stylesheet" href="/styles.css?v=1" />
+    <title>The Door Problem: rooms and doors for Godot 4</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="The Door Problem home">
+        <img src="/mark.svg" width="28" height="28" alt="" />
+        <span>The Door Problem</span>
+      </a>
+      <nav aria-label="Primary">
+        <a href="#problem">The problem</a>
+        <a href="#system">The system</a>
+        <a href="#play">Play</a>
+        <a href="#install">Install</a>
+        <a class="nav-source" href="https://github.com/splatterfacegames/godot-doors">Source</a>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="hero" id="top">
+        <div class="hero-copy">
+          <p class="eyebrow">godot-doors · a Godot 4.7 addon</p>
+          <h1>A door is never just a door.</h1>
+          <p class="lede">
+            godot-doors is a rooms and doors system for Godot. One autoload
+            decides who may pass a door, who can hear or see through it, who
+            knocks and who answers, who gets caught where they should not be,
+            and which rooms keep living while the player is somewhere else.
+          </p>
+          <div class="actions">
+            <a class="button button-primary" href="#play">Play Ashcombe House</a>
+            <a class="button button-quiet" href="https://github.com/splatterfacegames/godot-doors">Read the source</a>
+          </div>
+          <dl class="facts">
+            <div><dt>Engine</dt><dd>Godot 4.7</dd></div>
+            <div><dt>Addon</dt><dd>GDScript, no dependencies</dd></div>
+            <div><dt>Acceptance checks</dt><dd>130, headless</dd></div>
+            <div><dt>Licence</dt><dd>MIT</dd></div>
+          </dl>
+        </div>
+        <figure class="reel">
+          <video class="reel-video" src="/reel.mp4?v=1" poster="/img/listening.webp" width="1280" height="720" autoplay muted loop playsinline preload="metadata" aria-label="Fifty-six seconds of Ashcombe House: a visitor knocks and is admitted to the study; the maid hears voices through the closed door as dots, then listens and catches the words; the debug overlay shows the room graph; later she opens the servants' jib door quietly, passes the sleeping mistress and reads the letter in the dressing room."></video>
+          <figcaption>
+            The demo, recorded with Godot's Movie Maker and the Compatibility
+            renderer, as on the web. The cast are procedural mannequins; no art
+            assets are involved.
+          </figcaption>
+        </figure>
+      </section>
+
+      <section class="problem section" id="problem" aria-labelledby="problem-title">
+        <div class="section-head">
+          <h2 id="problem-title">The door problem</h2>
+          <p>
+            In 2014 Liz England answered &ldquo;what does a game designer
+            do?&rdquo; with a door. In
+            <a href="https://www.lizengland.com/blog/2014/04/the-door-problem/">The Door Problem</a>
+            she points out that the simplest object in a level makes almost
+            every discipline on a team decide something, and each team decides
+            it again for each game, usually as bugs.
+          </p>
+        </div>
+        <ul class="disciplines">
+          <li><b>Design</b> Can the player open it? Does it lock, and with what? Can enemies open it?</li>
+          <li><b>Level design</b> Where does it go, how big is it, and what is behind it?</li>
+          <li><b>Art</b> What does it look like, and how does a locked one look different?</li>
+          <li><b>Animation</b> Hand, shoulder or kick, and from which side?</li>
+          <li><b>Programming</b> State, collision, pathing through it, and closing on someone.</li>
+          <li><b>Audio</b> The creak, the latch, the knock, and how far each carries.</li>
+          <li><b>Narrative</b> What is behind it that matters?</li>
+          <li><b>AI</b> Do NPCs open it, close it after themselves, see through it?</li>
+          <li><b>QA</b> Both sides, at once, carrying things, a thousand times.</li>
+          <li><b>Production</b> All of the above, on a schedule.</li>
+        </ul>
+        <p class="pull">
+          England's post is a list of questions. This addon is one set of
+          answers, for games about houses full of people with secrets, where
+          a door does five jobs at once.
+        </p>
+      </section>
+
+      <section class="system section" id="system" aria-labelledby="system-title">
+        <div class="section-head">
+          <h2 id="system-title">Five jobs, one authority</h2>
+          <p>
+            No script keeps its own &ldquo;is this door open&rdquo;. Everything
+            asks the <code>RoomsAndDoors</code> autoload; <code>Door.tscn</code>
+            and <code>RoomArea</code> are thin views of its state. Every
+            discipline gets the same answers.
+          </p>
+        </div>
+        <div class="jobs">
+          <article>
+            <h3>Movement gate</h3>
+            <p>Three states, CLOSED, AJAR and OPEN, plus locked, held, blocked and jammed. Keys are ids; a master key lists the keys it stands in for. A close never completes into a body.</p>
+            <code>try_open · may_pass · grant_key</code>
+          </article>
+          <article>
+            <h3>Information gate</h3>
+            <p>Sound travels the door graph. A closed door passes its hearing factor, an ajar one more, an open one all of it. An ear against the door hears names. A keyhole shows a glimpse, then faces.</p>
+            <code>hear_check · sight_check · witnesses_of</code>
+          </article>
+          <article>
+            <h3>Social instrument</h3>
+            <p>Presence is not permission. Admission is computed: owner, resident, invited, on duty, or none. Chores grant bounded access. A servant on duty is invisible; one minute after, she is a discovery.</p>
+            <code>knock · admission · set_duty · discovery</code>
+          </article>
+          <article>
+            <h3>Content gate</h3>
+            <p>Restricted scenes declare door preconditions instead of checking by hand: closed, locked, private enough. One build flag resolves them to the scene or to a fade.</p>
+            <code>scene_preconditions_met · request_scene</code>
+          </article>
+          <article>
+            <h3>Simulation boundary</h3>
+            <p>Rooms one door from the player always run in full. Two doors out, at lower fidelity. Further, on the clock. A scene that started without you is joined in progress, never restarted.</p>
+            <code>simulation_tier · resident_rooms · start_activity</code>
+          </article>
+          <article>
+            <h3>QA</h3>
+            <p>Moving between rooms with no open door between them is flagged. 130 acceptance checks run headless. F3 draws the room graph, door states, witnesses and the last twenty events.</p>
+            <code>door_clip_detected · debug overlay</code>
+          </article>
+        </div>
+      </section>
+
+      <section class="sound section" aria-labelledby="sound-title">
+        <div class="section-head">
+          <h2 id="sound-title">What carries through a door</h2>
+          <p>
+            A conversation in the study, loudness 0.4, and the maid in the
+            gallery outside. Heard means above 0.08; identified, above 0.35.
+            The numbers are the addon's defaults, and the demo plays them.
+          </p>
+        </div>
+        <div class="sound-grid">
+          <figure>
+            <img src="/img/muffled.webp" width="1280" height="720" alt="The maid in the gallery; the overheard log shows lines as rows of dots attributed to 'a man'." loading="lazy" />
+            <figcaption>Through the closed door, the overheard log shows only dots.</figcaption>
+          </figure>
+          <dl class="readings">
+            <div><dt>Closed door, factor 0.3</dt><dd>0.12: heard, not identified</dd></div>
+            <div><dt>Ajar door, factor 0.3 + 0.6</dt><dd>0.36: identified</dd></div>
+            <div><dt>Closed door, listening (thresholds × 0.4)</dt><dd>identified</dd></div>
+            <div><dt>A whisper, 0.15, through the closed door</dt><dd>0.045: nothing</dd></div>
+            <div><dt>Quiet door, 0.5 × 0.25, beside a sleeper (× 2.5)</dt><dd>0.125 &lt; 0.2: she sleeps</dd></div>
+            <div><dt>The same door, closed normally</dt><dd>0.5: she wakes, and finds you</dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="play section-wide" id="play" aria-labelledby="play-title">
+        <div class="section-head section">
+          <h2 id="play-title">Play Ashcombe House.</h2>
+          <p>
+            You are the new maid. Tonight the master has a visitor, the mistress
+            is writing a letter, and every door in the house listens back. Find
+            out what the house is hiding before it finds out what you are
+            doing. About ten minutes; keyboard required.
+          </p>
+        </div>
+        <div class="demo-shell">
+          <div class="demo-bar">
+            <span>doorproblem.splatterfacegames.com/play</span>
+            <a href="/play/" target="_blank" rel="noopener">Open in a new tab</a>
+          </div>
+          <div class="demo-stage" data-demo-stage>
+            <div class="demo-poster">
+              <img src="/img/demo-poster.webp" width="1400" height="788" alt="" />
+              <div class="demo-poster-copy">
+                <button class="button button-primary" type="button" data-load-demo>Begin the night</button>
+                <small>About 50 MB. The download starts when you click.</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="section controls">
+          <dl class="keys">
+            <div><dt>WASD</dt><dd>walk; Shift sneaks and opens doors quietly</dd></div>
+            <div><dt>E</dt><dd>open, close, unlock, use; hold for chores</dd></div>
+            <div><dt>F</dt><dd>knock</dd></div>
+            <div><dt>hold R</dt><dd>listen at a door</dd></div>
+            <div><dt>hold T</dt><dd>peek through a keyhole</dd></div>
+            <div><dt>G</dt><dd>leave a door ajar</dd></div>
+            <div><dt>Z X</dt><dd>turn the camera</dd></div>
+            <div><dt>F3</dt><dd>the RoomsAndDoors debug overlay</dd></div>
+          </dl>
+          <p class="note">
+            A Godot web export: Compatibility renderer, no threads. The HUD is
+            one UXML document loaded by
+            <a href="https://godot-uxml.splatterfacegames.com">godot-uxml</a>;
+            room names and speech are
+            <a href="https://godot-typesetter.splatterfacegames.com">Typesetter</a>
+            text; the house is generated from a table of rooms and doors.
+            Desktop builds are on the
+            <a href="https://github.com/splatterfacegames/godot-doors/releases">releases page</a>.
+          </p>
+        </div>
+      </section>
+
+      <section class="install section" id="install" aria-labelledby="install-title">
+        <div class="install-steps">
+          <h2 id="install-title">Install</h2>
+          <ol>
+            <li>Copy <code>addons/rooms_and_doors</code> into your project.</li>
+            <li>Add the autoload <code>RoomsAndDoors</code> &rarr; <code>res://addons/rooms_and_doors/rooms_and_doors.gd</code>.</li>
+            <li>Put a <code>RoomArea</code> in each room and a <code>Door.tscn</code> in each doorway, then register your characters.</li>
+          </ol>
+          <p>
+            The design, section by section, is in
+            <a href="https://github.com/splatterfacegames/godot-doors/blob/main/docs/design.md">docs/design.md</a>;
+            the README lists every choice made where the design was open.
+          </p>
+        </div>
+        <pre class="code" tabindex="0"><code>RoomsAndDoors.register_character(&amp;"maid", $Maid, { "role": &amp;"servant" })
+RoomsAndDoors.set_duty(&amp;"maid", &amp;"study", { "duration": 120.0 })
+
+var r := RoomsAndDoors.try_open(&amp;"study_door", &amp;"maid", { "quiet": true })
+if not r.ok:
+    print(r.reason)            <i># LOCKED, NO_KEY, BLOCKED, HELD …</i>
+
+var h := RoomsAndDoors.hear_check(&amp;"maid", &amp;"study", RAD.LOUD_CONVERSATION)
+if h.identified:
+    print(h.participants)
+
+RoomsAndDoors.discovery.connect(func(who, finder, room, ctx):
+    print(finder, " found ", who, " in ", room))</code></pre>
+      </section>
+
+      <section class="status section" id="status" aria-labelledby="status-title">
+        <div class="section-head">
+          <h2 id="status-title">Where it is</h2>
+        </div>
+        <div class="ledger">
+          <div>
+            <h3>Built</h3>
+            <ul>
+              <li>The autoload: rooms, doors, keys and master keys, admission, duty windows, invitations, knock policies, hearing, keyhole and ajar sight, witnesses, discovery, trespass log, residency tiers, activities, scene preconditions, fade-to-black, versioned save and load.</li>
+              <li><code>Door.tscn</code> with placeholder clips and procedural sounds, <code>RoomArea</code> in 3D and 2D, <code>KeyItem</code>, <code>NpcDoorAgent</code>, the debug overlay.</li>
+              <li>130 acceptance checks and a demo smoke run, in CI on every push.</li>
+              <li>Ashcombe House on the web, Linux and Windows.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Not built</h3>
+            <ul>
+              <li>Navigation meshes: demo NPCs walk straight lines inside rectangular rooms and do not avoid furniture.</li>
+              <li>Art: the house is boxes and the cast are mannequins, by design.</li>
+              <li>A 2D demo. <code>RoomArea2D</code> exists; the ajar sight cone is 3D only.</li>
+              <li>Lockpicking, multiplayer and networking are out of scope.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="licence section" aria-labelledby="licence-title">
+        <h2 id="licence-title">Licence</h2>
+        <p>
+          Copyright 2026 Jetha Chan. godot-doors is available under the
+          <a href="https://github.com/splatterfacegames/godot-doors/blob/main/LICENSE">MIT License</a>.
+          The demo vendors godot-uxml (Apache 2.0) and Typesetter (MIT); both
+          draw Inter (SIL OFL 1.1). The addon itself depends on neither.
+          &ldquo;The Door Problem&rdquo; is Liz England's essay; this project
+          borrows its name with thanks and is not affiliated with her.
+        </p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="brand" href="#top"><img src="/mark.svg" width="22" height="22" alt="" /><span>The Door Problem</span></a>
+      <p>Also from Splatterface Games: <a href="https://godot-uxml.splatterfacegames.com">godot-uxml</a> and <a href="https://godot-typesetter.splatterfacegames.com">Typesetter</a>.</p>
+      <div>
+        <a href="https://github.com/splatterfacegames/godot-doors">GitHub</a>
+        <a href="https://github.com/splatterfacegames/godot-doors/blob/main/README.md">README</a>
+        <a href="https://github.com/splatterfacegames/godot-doors/blob/main/LICENSE">MIT</a>
+      </div>
+    </footer>
+
+    <script src="/app.js?v=1" defer></script>
+  </body>
+</html>
