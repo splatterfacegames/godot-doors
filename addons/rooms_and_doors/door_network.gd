@@ -80,7 +80,10 @@ func _send(action: StringName, id: StringName, destination: StringName) -> void:
 		var peer := multiplayer.get_unique_id() if multiplayer.has_multiplayer_peer() else 1
 		request_result.emit(_perform(peer, action, id, destination))
 	else:
-		_request_action.rpc_id(1, action, id, destination)
+		if multiplayer.multiplayer_peer.get_connection_status() == MultiplayerPeer.CONNECTION_CONNECTED:
+			_request_action.rpc_id(1, action, id, destination)
+		else:
+			request_result.emit({"ok": false, "reason": &"not_connected"})
 
 
 @rpc("any_peer", "call_remote", "reliable")

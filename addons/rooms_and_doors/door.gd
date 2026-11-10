@@ -21,7 +21,7 @@ extends StaticBody3D
 @export var ajar_angle_deg: float = 22.0
 @export var open_angle_deg: float = 95.0
 ## Character/prop physics layers observed by interaction and safe-close volumes.
-@export_flags_3d_physics var actor_collision_mask: int = 6
+@export_flags_3d_physics var actor_collision_mask: int = 7
 @export var creak_stream: AudioStream
 @export var knock_stream: AudioStream
 @export var latch_stream: AudioStream

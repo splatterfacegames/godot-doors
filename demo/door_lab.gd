@@ -258,6 +258,8 @@ func _physics_process(dt: float) -> void:
 	if not is_instance_valid(door): return
 	elapsed += dt
 	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
+		if multiplayer.multiplayer_peer.get_connection_status() != MultiplayerPeer.CONNECTION_CONNECTED:
+			return
 		var input_direction := Vector3(float(Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT))-float(Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_LEFT)),0,float(Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN))-float(Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP)))
 		_remote_movement.rpc_id(1,input_direction)
 		_update_status()
