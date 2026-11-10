@@ -146,6 +146,8 @@ Use its experiment list and variant buttons to change the rules. P1 uses WASD/E;
 P2 uses arrows/Enter. The lab displays its controls, current room retention, progress,
 and the reason each interaction succeeds or fails. Reset restores the experiment.
 
+![Door Lab: two mannequins, a physical doorway, experiment controls and live room status](docs/media/door-lab.jpg)
+
 Native LAN: use **Host LAN** on one machine and enter its address on the other, or run:
 
 ```

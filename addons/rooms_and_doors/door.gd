@@ -217,7 +217,9 @@ func _apply_size() -> void:
 	var swing_shape := _swing_area.get_node_or_null(^"CollisionShape3D") as CollisionShape3D
 	if swing_shape != null:
 		var swing_box := BoxShape3D.new()
-		swing_box.size = Vector3(width, height, width * 1.1)
+		# Keep the sensor inside the opening and above the floor. Exact contact
+		# with fixed floor/jamb geometry must not count as an obstructing body.
+		swing_box.size = Vector3(maxf(0.05, width - 0.1), maxf(0.05, height - 0.1), width * 1.1)
 		swing_shape.shape = swing_box
 	_interactable.position.y = height * 0.5
 	var interaction_shape := _interactable.get_node_or_null(^"CollisionShape3D") as CollisionShape3D

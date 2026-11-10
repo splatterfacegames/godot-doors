@@ -1,0 +1,94 @@
+[
+  {
+    "name": "01_shrine",
+    "request": {
+      "model": "minimaxai/minimax-h3",
+      "prompt": "A dry British mockumentary, cinematic practical miniature sets, warm amber lighting, dark teal shadows, elaborate Edwardian woodwork, restrained absurdist comedy. Widescreen 16:9. No titles, subtitles, logos or readable text. No dialogue or lip movement; only room tone and comic practical sound effects. A pompous middle-aged human professor in a tweed suit stands in a grand museum beside an ordinary wooden door mounted on a velvet plinth. He reverently polishes its brass knob with a tiny brush as if preserving the last sacred artifact of human intelligence. Slow camera push in; he holds a magnifying glass up to the hinge and nods gravely. The door is visibly just a normal door.",
+      "seconds": 10,
+      "aspect_ratio": "16:9"
+    },
+    "job": {
+      "id": "video_50db913d242945c2a293bca5af05ed72",
+      "object": "video",
+      "model": "minimaxai/minimax-h3",
+      "prompt": "A dry British mockumentary, cinematic practical miniature sets, warm amber lighting, dark teal shadows, elaborate Edwardian woodwork, restrained absurdist comedy. Widescreen 16:9. No titles, subtitles, logos or readable text. No dialogue or lip movement; only room tone and comic practical sound effects. A pompous middle-aged human professor in a tweed suit stands in a grand museum beside an ordinary wooden door mounted on a velvet plinth. He reverently polishes its brass knob with a tiny brush as if preserving the last sacred artifact of human intelligence. Slow camera push in; he holds a magnifying glass up to the hinge and nods gravely. The door is visibly just a normal door.",
+      "seconds": 10,
+      "status": "completed",
+      "error": null,
+      "cost": "90.00000000",
+      "currency": "jpy",
+      "created_at": 1794294234,
+      "completed_at": 1794294274,
+      "thumbnail": true
+    }
+  },
+  {
+    "name": "02_soul",
+    "request": {
+      "model": "minimaxai/minimax-h3",
+      "prompt": "A dry British mockumentary, cinematic practical miniature sets, warm amber lighting, dark teal shadows, elaborate Edwardian woodwork, restrained absurdist comedy. Widescreen 16:9. No titles, subtitles, logos or readable text. No dialogue or lip movement; only room tone and comic practical sound effects. In a grand Edwardian laboratory, a solemn committee of three human academics in tweed studies a simple wooden door. One holds a stethoscope to the wood, one measures the brass hinge with calipers, and one solemnly weighs a tiny glowing golden orb on scales beside the door. A small polite brass robot waits patiently behind them holding a neat blueprint. One continuous sideways tracking shot. The academics ignore the robot.",
+      "seconds": 10,
+      "aspect_ratio": "16:9"
+    },
+    "job": {
+      "id": "video_b56698e881eb420f8033c8fe68db3298",
+      "object": "video",
+      "model": "minimaxai/minimax-h3",
+      "prompt": "A dry British mockumentary, cinematic practical miniature sets, warm amber lighting, dark teal shadows, elaborate Edwardian woodwork, restrained absurdist comedy. Widescreen 16:9. No titles, subtitles, logos or readable text. No dialogue or lip movement; only room tone and comic practical sound effects. In a grand Edwardian laboratory, a solemn committee of three human academics in tweed studies a simple wooden door. One holds a stethoscope to the wood, one measures the brass hinge with calipers, and one solemnly weighs a tiny glowing golden orb on scales beside the door. A small polite brass robot waits patiently behind them holding a neat blueprint. One continuous sideways tracking shot. The academics ignore the robot.",
+      "seconds": 10,
+      "status": "completed",
+      "error": null,
+      "cost": "90.00000000",
+      "currency": "jpy",
+      "created_at": 1794294235,
+      "completed_at": 1794294276,
+      "thumbnail": true
+    }
+  },
+  {
+    "name": "03_spec",
+    "request": {
+      "model": "minimaxai/minimax-h3",
+      "prompt": "A dry British mockumentary, cinematic practical miniature sets, warm amber lighting, dark teal shadows, elaborate Edwardian woodwork, restrained absurdist comedy. Widescreen 16:9. No titles, subtitles, logos or readable text. No dialogue or lip movement; only room tone and comic practical sound effects. In an ornate Edwardian office a small competent brass robot at a drafting table unrolls a very long blueprint full of abstract geometric diagrams without readable words. Behind it a mechanical demonstration door smoothly closes, latches, unlocks and opens. A tweed professor enters carrying an enormous disorganized pile of blank paper, looks at the working door, and drops his papers in a comic flutter. Slow sideways dolly, precise practical mechanical motion.",
+      "seconds": 10,
+      "aspect_ratio": "16:9"
+    },
+    "job": {
+      "id": "video_fe9d627a61034fbea85fbb04ceae63fe",
+      "object": "video",
+      "model": "minimaxai/minimax-h3",
+      "prompt": "A dry British mockumentary, cinematic practical miniature sets, warm amber lighting, dark teal shadows, elaborate Edwardian woodwork, restrained absurdist comedy. Widescreen 16:9. No titles, subtitles, logos or readable text. No dialogue or lip movement; only room tone and comic practical sound effects. In an ornate Edwardian office a small competent brass robot at a drafting table unrolls a very long blueprint full of abstract geometric diagrams without readable words. Behind it a mechanical demonstration door smoothly closes, latches, unlocks and opens. A tweed professor enters carrying an enormous disorganized pile of blank paper, looks at the working door, and drops his papers in a comic flutter. Slow sideways dolly, precise practical mechanical motion.",
+      "seconds": 10,
+      "status": "completed",
+      "error": null,
+      "cost": "90.00000000",
+      "currency": "jpy",
+      "created_at": 1794294410,
+      "completed_at": 1794294448,
+      "thumbnail": true
+    }
+  },
+  {
+    "name": "04_goalposts",
+    "request": {
+      "model": "minimaxai/minimax-h3",
+      "prompt": "A dry British mockumentary, cinematic practical miniature sets, warm amber lighting, dark teal shadows, elaborate Edwardian woodwork, restrained absurdist comedy. Widescreen 16:9. No titles, subtitles, logos or readable text. No dialogue or lip movement; only room tone and comic practical sound effects. On a miniature green cricket lawn outside an Edwardian manor, a flustered tweed professor pushes a wooden door mounted on wheels away from a small polite brass robot. The robot walks calmly through a second identical open doorway. The professor frantically wheels yet another doorway farther back across the grass. Wide locked-off shot with gentle camera push, clear comic timing, late afternoon light. The door frames visibly have little caster wheels.",
+      "seconds": 10,
+      "aspect_ratio": "16:9"
+    },
+    "job": {
+      "id": "video_0a76e0e86f0943a4ad3eb5256ccf6d3c",
+      "object": "video",
+      "model": "minimaxai/minimax-h3",
+      "prompt": "A dry British mockumentary, cinematic practical miniature sets, warm amber lighting, dark teal shadows, elaborate Edwardian woodwork, restrained absurdist comedy. Widescreen 16:9. No titles, subtitles, logos or readable text. No dialogue or lip movement; only room tone and comic practical sound effects. On a miniature green cricket lawn outside an Edwardian manor, a flustered tweed professor pushes a wooden door mounted on wheels away from a small polite brass robot. The robot walks calmly through a second identical open doorway. The professor frantically wheels yet another doorway farther back across the grass. Wide locked-off shot with gentle camera push, clear comic timing, late afternoon light. The door frames visibly have little caster wheels.",
+      "seconds": 10,
+      "status": "completed",
+      "error": null,
+      "cost": "90.00000000",
+      "currency": "jpy",
+      "created_at": 1794294412,
+      "completed_at": 1794294452,
+      "thumbnail": true
+    }
+  }
+]
