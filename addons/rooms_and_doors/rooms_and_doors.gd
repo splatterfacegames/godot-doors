@@ -502,6 +502,10 @@ func try_open(door_id: StringName, actor_id: StringName, opts: Dictionary = {}) 
 	var force: bool = opts.get("force", false)
 	if int(d["state"]) == RAD.DoorState.OPEN and not _pending_swings.has(door_id):
 		return RAD.result(true, RAD.OK, get_door(door_id))
+	# A proximity trigger may request opening every frame. Preserve the original
+	# completion time instead of restarting the same swing indefinitely.
+	if _pending_swings.has(door_id) and int(_pending_swings[door_id]["target"]) == RAD.DoorState.OPEN:
+		return RAD.result(true, RAD.OK, get_door(door_id))
 	if bool(d["jammed"]) and not force:
 		return RAD.result(false, RAD.JAMMED, get_door(door_id))
 	if bool(d["locked"]) and not force:

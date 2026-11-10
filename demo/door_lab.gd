@@ -233,6 +233,7 @@ func _spawn_actor(id: StringName, at: Vector3, color: Color) -> void:
 	body.collision_layer = 2
 	body.collision_mask = 3
 	var shape := CollisionShape3D.new()
+	shape.name = "CollisionShape3D"
 	var capsule := CapsuleShape3D.new()
 	capsule.radius = 0.28
 	capsule.height = 1.75
