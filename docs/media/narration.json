@@ -1,50 +1,72 @@
 {
   "provider": "ElevenLabs",
-  "voice": "George",
-  "voice_id": "JBFqnCBsd6RMkjVDRZzb",
+  "narrator": {
+    "name": "Aimee",
+    "voice_id": "fCqNx624ZlenYx5PXk6M",
+    "accent": "refined Australian",
+    "gender": "female"
+  },
+  "quote_voice": {
+    "name": "George",
+    "voice_id": "JBFqnCBsd6RMkjVDRZzb",
+    "gender": "male",
+    "segment": "quote"
+  },
   "model": "eleven_multilingual_v2",
   "segments": [
     {
       "name": "shrine",
-      "seconds": 9.752381,
+      "voice": "Aimee",
+      "voice_id": "fCqNx624ZlenYx5PXk6M",
+      "seconds": 9.334422,
       "characters": "62",
-      "request_id": "oQfRm77EkfuqzSvAS4If"
+      "request_id": "uYPZ7VLNoN3eJLLRiwpY"
     },
     {
       "name": "soul",
-      "seconds": 9.566621,
+      "voice": "Aimee",
+      "voice_id": "fCqNx624ZlenYx5PXk6M",
+      "seconds": 9.613061,
       "characters": "61",
-      "request_id": "dzPgcEdcCjQ8y1fDyy4Y"
+      "request_id": "e25sFfviGVvWiz1G7j1a"
     },
     {
       "name": "quote",
-      "seconds": 9.195102,
-      "characters": "70",
-      "request_id": "o71fuh1bfEMLYL367Na0"
+      "voice": "George",
+      "voice_id": "JBFqnCBsd6RMkjVDRZzb",
+      "cached": true
     },
     {
       "name": "spec",
-      "seconds": 9.055782,
+      "voice": "Aimee",
+      "voice_id": "fCqNx624ZlenYx5PXk6M",
+      "seconds": 8.684263,
       "characters": "62",
-      "request_id": "oJv9t5N2uJRkfZYQCoAk"
+      "request_id": "QG6cjRNZ5MH0YLWLGDMp"
     },
     {
       "name": "game",
-      "seconds": 13.746213,
+      "voice": "Aimee",
+      "voice_id": "fCqNx624ZlenYx5PXk6M",
+      "seconds": 15.27873,
       "characters": "98",
-      "request_id": "0ESwsFWKajLOnMEbuXGB"
+      "request_id": "Q3vbGDZyZKMUVw0ghg67"
     },
     {
       "name": "goalposts",
-      "seconds": 8.962902,
+      "voice": "Aimee",
+      "voice_id": "fCqNx624ZlenYx5PXk6M",
+      "seconds": 9.938141,
       "characters": "62",
-      "request_id": "3715tXhVbkw3lpHZhKnW"
+      "request_id": "rUPDWfOcPUCS9gvLRZ77"
     },
     {
       "name": "end",
-      "seconds": 3.065034,
+      "voice": "Aimee",
+      "voice_id": "fCqNx624ZlenYx5PXk6M",
+      "seconds": 2.739955,
       "characters": "20",
-      "request_id": "kuBUPQ1voc1MEp8ymX0c"
+      "request_id": "iqNQsFOITsO12BpeTqxK"
     }
   ]
 }
