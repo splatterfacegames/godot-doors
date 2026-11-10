@@ -98,6 +98,33 @@
         </p>
       </section>
 
+      <section class="problem section" id="door-lab" aria-labelledby="lab-title">
+        <div class="section-head">
+          <h2 id="lab-title">Try the decisions.</h2>
+          <p>Choose <b>Door Lab</b> on the game's title screen for twelve interactive experiments.
+            Decorative and sealed entrances, automatic opening, keys and puzzles, hacking and story gates,
+            two local players, blocked thresholds, group closure, wait or teleport, oversized bodies,
+            ally queues, hidden reinforcements, and earned rewards with timed access.</p>
+        </div>
+        <p>The <a href="https://github.com/splatterfacegames/godot-doors/blob/main/docs/door-problem-decisions.md">complete implementation companion</a>
+          follows every question and production role in England's essay. The lab demonstrates
+          different choices; the manor shows what those choices mean inside a story.
+          Native desktop builds additionally offer server-authoritative host/join.</p>
+      </section>
+
+      <section class="problem section" id="satire" aria-labelledby="satire-title">
+        <div class="section-head">
+          <h2 id="satire-title">The sacred human mystery of a hinge.</h2>
+          <p>A short satire about treating design complexity as proof of human exceptionalism.
+            England's essay explains real design work. The joke targets the claim that a machine cannot do it.</p>
+        </div>
+        <video src="/door-problem-x.mp4" width="1280" height="720" controls playsinline preload="metadata" style="width:100%;height:auto" aria-label="The Door Problem: 78-second satire with captions, synthetic narration, MiniMax H3 scenes and actual Godot gameplay"></video>
+        <p>40 of 78 seconds generated with MiniMax H3 through ai&amp;; actual gameplay is labeled.
+          Synthetic narration and original synthesized music.
+          <a href="/door-problem-x.mp4" download>Download the MP4</a> ·
+          <a href="https://github.com/splatterfacegames/godot-doors/blob/main/docs/media/door-problem-script.md">Script and credits</a></p>
+      </section>
+
       <section class="system section" id="system" aria-labelledby="system-title">
         <div class="section-head">
           <h2 id="system-title">Five jobs, one authority</h2>
@@ -266,7 +293,7 @@ RoomsAndDoors.discovery.connect(func(who, finder, room, ctx):
               <li>Crowd avoidance: demo NPCs path around furniture on a baked navigation mesh, but not around each other or the player.</li>
               <li>Art: the house is boxes and the cast are mannequins, by design.</li>
               <li>A 2D demo. <code>RoomArea2D</code> exists; the ajar sight cone is 3D only.</li>
-              <li>Lockpicking, multiplayer and networking are out of scope.</li>
+              <li>The lab's multiplayer transport uses native ENet; browser play supports two local players. Online browser matchmaking and a combat game are not included.</li>
             </ul>
           </div>
         </div>

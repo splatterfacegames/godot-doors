@@ -42,6 +42,7 @@
         <ui:Label class="subtitle" text="Ashcombe House, one night" />
         <ui:Label class="blurb intro" text="You are the new maid. Tonight the master has a visitor, the mistress is writing a letter, and every door in the house is listening back. Learn what the house is hiding before the house learns what you are doing." />
         <ui:Button name="start" class="btn primary" text="Begin the night" />
+        <ui:Button name="door_lab" class="btn" text="Explore the Door Lab · 12 experiments" />
         <ui:Button name="controls" class="btn" text="Controls" />
       </ui:VisualElement>
     </ui:VisualElement>

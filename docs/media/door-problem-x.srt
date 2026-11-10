@@ -1,0 +1,67 @@
+1
+00:00:00,000 --> 00:00:03,200
+Behold: the door.
+
+2
+00:00:03,200 --> 00:00:06,599
+The final frontier of artificial intelligence?
+
+3
+00:00:06,599 --> 00:00:10,000
+A wooden rectangle. A sacred human mystery.
+
+4
+00:00:10,000 --> 00:00:13,099
+Can a machine understand a hinge?
+
+5
+00:00:13,099 --> 00:00:16,399
+The emotional journey of a doorknob?
+
+6
+00:00:16,399 --> 00:00:20,000
+Surely only a human can write a specification.
+
+7
+00:00:20,100 --> 00:00:35,899
+You insist there is something a machine cannot do. If you tell me precisely what a machine cannot do, then I can always make a machine which will do just that.
+
+8
+00:00:36,000 --> 00:00:40,799
+Liz England described real design work.
+
+9
+00:00:40,799 --> 00:00:46,000
+Human supremacy? Chauvinism with brass fittings.
+
+10
+00:00:46,000 --> 00:00:50,500
+Keys. Permissions. Knocks. Invitations.
+
+11
+00:00:50,500 --> 00:00:55,000
+Hearing. Eavesdropping. Suspicion.
+
+12
+00:00:55,000 --> 00:00:59,500
+NPCs navigate the house and use its doors.
+
+13
+00:00:59,500 --> 00:01:04,000
+Playable in your browser. Open source.
+
+14
+00:01:04,000 --> 00:01:07,400
+"But does it REALLY understand the door?"
+
+15
+00:01:07,400 --> 00:01:10,599
+The goalposts have acquired castors.
+
+16
+00:01:10,599 --> 00:01:14,000
+Specify the missing behavior. Then build it.
+
+17
+00:01:14,099 --> 00:01:17,900
+The door problem. Now accepting pull requests.

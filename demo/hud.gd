@@ -4,6 +4,7 @@ extends CanvasLayer
 
 signal start_pressed
 signal restart_pressed
+signal lab_pressed
 
 const LOG_LINES := 7
 
@@ -45,6 +46,8 @@ func _on_button(element_name: String) -> void:
 		"start":
 			_show("title_screen", false)
 			start_pressed.emit()
+		"door_lab":
+			lab_pressed.emit()
 		"controls":
 			_in_help_from_title = true
 			_show("title_screen", false)

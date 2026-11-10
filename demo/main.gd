@@ -46,6 +46,9 @@ func _count_furniture_walks() -> void:
 
 
 func _ready() -> void:
+	if OS.get_cmdline_user_args().has("--door-lab") or OS.get_cmdline_user_args().has("--lab-tour"):
+		get_tree().change_scene_to_file.call_deferred("res://demo/door_lab.tscn")
+		return
 	for a in OS.get_cmdline_user_args():
 		var kv := a.trim_prefix("--").split("=", true, 1)
 		_args[kv[0]] = kv[1] if kv.size() > 1 else "1"
@@ -74,6 +77,9 @@ func _ready() -> void:
 	add_child(story)
 	hud.start_pressed.connect(_start)
 	hud.restart_pressed.connect(_restart)
+	hud.lab_pressed.connect(func():
+		get_tree().paused = false
+		get_tree().change_scene_to_file("res://demo/door_lab.tscn"))
 	# Hold the clock on the title screen.
 	get_tree().paused = false
 	hud.process_mode = Node.PROCESS_MODE_ALWAYS
@@ -135,7 +141,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _process(_dt: float) -> void:
-	player.camera_yaw = rig.yaw
+	if is_instance_valid(player) and is_instance_valid(rig): player.camera_yaw = rig.yaw
 
 
 # --- verification modes -------------------------------------------------------------

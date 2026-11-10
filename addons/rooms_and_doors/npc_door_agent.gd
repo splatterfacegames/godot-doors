@@ -59,6 +59,7 @@ func _ready() -> void:
 
 ## business = it has a reason to be admitted (knocks rather than rerouting/waiting).
 func go_to(room_id: StringName, has_business: bool = false) -> void:
+	_release_reservation()
 	goal = room_id
 	business = has_business
 	_waits = 0
@@ -68,7 +69,17 @@ func go_to(room_id: StringName, has_business: bool = false) -> void:
 
 
 func cancel() -> void:
+	_release_reservation()
 	state = State.IDLE
+
+
+func _exit_tree() -> void:
+	_release_reservation()
+
+
+func _release_reservation() -> void:
+	if current_door != &"" and is_instance_valid(RoomsAndDoors.policy_controller):
+		RoomsAndDoors.policy_controller.exit_threshold(current_door, character_id)
 
 
 func notify_at_door() -> void:
@@ -176,18 +187,33 @@ func _at_door(here: StringName) -> void:
 			RoomsAndDoors.knock(blocked_door, character_id)
 		knocked.emit(blocked_door)
 		return
+	var policies := RoomsAndDoors.policy_controller as DoorPolicies
+	if policies != null:
+		var reservation := policies.reserve_threshold(current_door, character_id)
+		if not bool(reservation["ok"]):
+			state = State.WAIT
+			_timer = wait_retry
+			waiting.emit(current_door)
+			return
 	var check := RoomsAndDoors.may_pass(character_id, current_door)
 	if not bool(check["ok"]):
+		_release_reservation()
 		state = State.PLAN
 		return
 	var d := RoomsAndDoors.get_door(current_door)
 	if bool(d["locked"]):
 		if not bool(RoomsAndDoors.try_unlock(current_door, character_id)["ok"]):
+			_release_reservation()
 			state = State.PLAN
 			return
 	if int(d["state"]) != RAD.DoorState.OPEN or bool(d.get("swinging", false)):
-		var r := RoomsAndDoors.try_open(current_door, character_id)
+		var r: Dictionary
+		if policies != null:
+			r = policies.request_open(current_door, character_id, {"trigger": policies.trigger_for(current_door)})
+		else:
+			r = RoomsAndDoors.try_open(current_door, character_id)
 		if not bool(r["ok"]):
+			_release_reservation()
 			state = State.WAIT
 			_timer = wait_retry
 			waiting.emit(current_door)
@@ -199,6 +225,7 @@ func _at_door(here: StringName) -> void:
 func _await_swing(here: StringName) -> void:
 	var d := RoomsAndDoors.get_door(current_door)
 	if d.is_empty():
+		_release_reservation()
 		state = State.PLAN
 		return
 	if int(d["state"]) != RAD.DoorState.OPEN:
@@ -210,6 +237,8 @@ func _await_swing(here: StringName) -> void:
 		return
 	_cross_from = here
 	_cross_to = _other_side(current_door, here)
+	if is_instance_valid(RoomsAndDoors.policy_controller):
+		RoomsAndDoors.policy_controller.enter_threshold(current_door, character_id)
 	if wait_for_body:
 		_body_crossed = false
 		state = State.CROSSING
@@ -222,6 +251,7 @@ func _complete_cross() -> void:
 	var here := _cross_from
 	var to := _cross_to
 	RoomsAndDoors.set_occupant_room(character_id, to)
+	_release_reservation()
 	crossed.emit(current_door, to)
 	if _should_close_behind(here, to):
 		RoomsAndDoors.try_close(current_door, character_id)
@@ -269,5 +299,6 @@ func _other_side(door_id: StringName, room_id: StringName) -> StringName:
 
 
 func _fail(reason: StringName) -> void:
+	_release_reservation()
 	state = State.FAILED
 	gave_up.emit(goal, reason)

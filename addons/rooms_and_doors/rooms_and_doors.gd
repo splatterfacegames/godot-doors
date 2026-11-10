@@ -132,6 +132,11 @@ var _rng := RandomNumberGenerator.new()
 var _since_overhear: float = 0.0
 var _since_discovery: float = 0.0
 var _overlay: Node = null
+## Optional DoorPolicies controller; physical state remains in this autoload.
+var policy_controller: Node = null
+var policy_state: Dictionary = {}
+var _local_players: Array[StringName] = []
+var _door_blockers: Dictionary = {}
 var _activity_seq: int = 0
 
 
@@ -292,6 +297,40 @@ func set_player(character_id: StringName) -> void:
 	_recompute_tiers()
 
 
+func register_local_player(character_id: StringName) -> void:
+	if not _local_players.has(character_id):
+		_local_players.append(character_id)
+	_recompute_tiers()
+
+
+func character_body(character_id: StringName) -> Node:
+	return _chars.get(character_id, {}).get("body") as Node
+
+
+func door_view(door_id: StringName) -> Node:
+	return _door_nodes.get(door_id) as Node
+
+
+func is_authoritative() -> bool:
+	return not multiplayer.has_multiplayer_peer() or multiplayer.is_server()
+
+
+## Trusted server gameplay policy operations; never exposed as client RPCs.
+func set_policy_door_state(id: StringName, state: int, locked: bool) -> void:
+	if not is_authoritative() or not _doors.has(id):
+		return
+	_pending_swings.erase(id)
+	_doors[id]["locked"] = locked
+	_set_state(id, state)
+	_notify_door(id)
+
+
+func set_policy_key(id: StringName, key_id: StringName) -> void:
+	if is_authoritative() and _doors.has(id):
+		_doors[id]["key_id"] = key_id
+		_notify_door(id)
+
+
 func get_player() -> StringName:
 	return _player_id
 
@@ -314,10 +353,15 @@ func register_scene(scene_id: StringName, requires: Dictionary) -> void:
 
 ## `teleport` = zone load / scripted relocation; skips the door-clip check.
 func set_occupant_room(character_id: StringName, room_id: StringName, teleport: bool = false) -> void:
+	if not is_authoritative():
+		return
 	var c := _char(character_id)
 	var from: StringName = c.get("room", &"")
 	if from == room_id:
 		return
+	if not teleport and from != &"" and room_id != &"" and is_instance_valid(policy_controller):
+		if not policy_controller.authorize_room_entry(character_id, from, room_id):
+			return
 	if room_id != &"" and not _rooms.has(room_id):
 		register_room({ "id": room_id })
 	var last: StringName = c.get("last_room", &"")
@@ -339,7 +383,7 @@ func set_occupant_room(character_id: StringName, room_id: StringName, teleport: 
 	if room_id != &"":
 		_check_trespass(character_id, room_id)
 		_join_activities(character_id, room_id)
-	if character_id == _player_id:
+	if character_id == _player_id or _local_players.has(character_id):
 		_recompute_tiers()
 	_evaluate_activities()
 	_check_discoveries()
@@ -446,8 +490,14 @@ func get_door(door_id: StringName) -> Dictionary:
 
 
 func try_open(door_id: StringName, actor_id: StringName, opts: Dictionary = {}) -> Dictionary:
+	if not is_authoritative():
+		return RAD.result(false, &"server_authority")
 	if not _doors.has(door_id):
 		return RAD.result(false, RAD.NO_SUCH_DOOR)
+	if is_instance_valid(policy_controller):
+		var policy_check: Dictionary = policy_controller.check_open(door_id, actor_id, opts)
+		if not bool(policy_check.get("ok", false)):
+			return policy_check
 	var d: Dictionary = _doors[door_id]
 	var force: bool = opts.get("force", false)
 	if int(d["state"]) == RAD.DoorState.OPEN and not _pending_swings.has(door_id):
@@ -479,6 +529,10 @@ func try_open(door_id: StringName, actor_id: StringName, opts: Dictionary = {}) 
 
 
 func try_close(door_id: StringName, actor_id: StringName, opts: Dictionary = {}) -> Dictionary:
+	if not is_authoritative():
+		return RAD.result(false, &"server_authority")
+	if is_instance_valid(policy_controller) and not policy_controller.can_close(door_id):
+		return RAD.result(false, &"open_only")
 	if not _doors.has(door_id):
 		return RAD.result(false, RAD.NO_SUCH_DOOR)
 	var d: Dictionary = _doors[door_id]
@@ -510,6 +564,14 @@ func try_close(door_id: StringName, actor_id: StringName, opts: Dictionary = {})
 
 
 func set_ajar(door_id: StringName, actor_id: StringName, opts: Dictionary = {}) -> Dictionary:
+	if not is_authoritative():
+		return RAD.result(false, &"server_authority")
+	if is_instance_valid(policy_controller) and not policy_controller.can_close(door_id):
+		return RAD.result(false, &"open_only")
+	if is_instance_valid(policy_controller):
+		var check: Dictionary = policy_controller.check_open(door_id, actor_id, opts)
+		if not bool(check.get("ok", false)):
+			return check
 	if not _doors.has(door_id):
 		return RAD.result(false, RAD.NO_SUCH_DOOR)
 	var d: Dictionary = _doors[door_id]
@@ -528,6 +590,8 @@ func set_ajar(door_id: StringName, actor_id: StringName, opts: Dictionary = {}) 
 
 
 func try_lock(door_id: StringName, actor_id: StringName) -> Dictionary:
+	if not is_authoritative():
+		return RAD.result(false, &"server_authority")
 	if not _doors.has(door_id):
 		return RAD.result(false, RAD.NO_SUCH_DOOR)
 	var d: Dictionary = _doors[door_id]
@@ -545,6 +609,10 @@ func try_lock(door_id: StringName, actor_id: StringName) -> Dictionary:
 
 
 func try_unlock(door_id: StringName, actor_id: StringName) -> Dictionary:
+	if not is_authoritative():
+		return RAD.result(false, &"server_authority")
+	if is_instance_valid(policy_controller) and not policy_controller.can_unlock(door_id):
+		return RAD.result(false, &"sealed")
 	if not _doors.has(door_id):
 		return RAD.result(false, RAD.NO_SUCH_DOOR)
 	var d: Dictionary = _doors[door_id]
@@ -558,6 +626,8 @@ func try_unlock(door_id: StringName, actor_id: StringName) -> Dictionary:
 
 
 func hold_open(door_id: StringName, actor_id: StringName) -> Dictionary:
+	if not is_authoritative():
+		return RAD.result(false, &"server_authority")
 	if not _doors.has(door_id):
 		return RAD.result(false, RAD.NO_SUCH_DOOR)
 	var d: Dictionary = _doors[door_id]
@@ -576,6 +646,8 @@ func hold_open(door_id: StringName, actor_id: StringName) -> Dictionary:
 
 
 func release_hold(door_id: StringName, actor_id: StringName) -> Dictionary:
+	if not is_authoritative():
+		return RAD.result(false, &"server_authority")
 	if not _doors.has(door_id):
 		return RAD.result(false, RAD.NO_SUCH_DOOR)
 	var d: Dictionary = _doors[door_id]
@@ -589,17 +661,28 @@ func release_hold(door_id: StringName, actor_id: StringName) -> Dictionary:
 
 
 ## Door view reports bodies in the swing (§6.1). Never lets a close complete into a body.
-func set_door_blocked(door_id: StringName, blocked: bool) -> void:
-	if not _doors.has(door_id):
+func set_door_blocked(door_id: StringName, blocked: bool, source: StringName = &"view") -> void:
+	if not is_authoritative() or not _doors.has(door_id):
 		return
+	if not _door_blockers.has(door_id):
+		_door_blockers[door_id] = {}
+	if blocked:
+		_door_blockers[door_id][source] = true
+	else:
+		(_door_blockers[door_id] as Dictionary).erase(source)
+	blocked = not (_door_blockers[door_id] as Dictionary).is_empty()
 	_doors[door_id]["blocked"] = blocked
 	if blocked and _pending_swings.has(door_id) and int(_pending_swings[door_id]["target"]) == RAD.DoorState.CLOSED:
 		_pending_swings.erase(door_id)
 		_set_state(door_id, RAD.DoorState.AJAR)
 		_emit(&"door_blocked", [door_id])
+	if not blocked:
+		_notify_door(door_id)
 
 
 func set_door_jammed(door_id: StringName, jammed: bool) -> void:
+	if not is_authoritative():
+		return
 	if _doors.has(door_id):
 		_doors[door_id]["jammed"] = jammed
 		_notify_door(door_id)
@@ -607,6 +690,8 @@ func set_door_jammed(door_id: StringName, jammed: bool) -> void:
 
 ## PER-GAME hook: oiling / maintenance.
 func set_door_sound_level(door_id: StringName, level: float) -> void:
+	if not is_authoritative():
+		return
 	if _doors.has(door_id):
 		_doors[door_id]["sound_level"] = maxf(0.0, level)
 
@@ -636,6 +721,8 @@ func has_key(character_id: StringName, key_id: StringName) -> bool:
 
 
 func grant_key(character_id: StringName, key_id: StringName) -> void:
+	if not is_authoritative():
+		return
 	if not _keyrings.has(character_id):
 		_keyrings[character_id] = []
 	var ring: Array = _keyrings[character_id]
@@ -645,6 +732,8 @@ func grant_key(character_id: StringName, key_id: StringName) -> void:
 
 
 func revoke_key(character_id: StringName, key_id: StringName) -> void:
+	if not is_authoritative():
+		return
 	var ring: Array = _keyrings.get(character_id, [])
 	if ring.has(key_id):
 		ring.erase(key_id)
@@ -662,6 +751,11 @@ func keyring(character_id: StringName) -> Array[StringName]:
 ## ok = true means passable, possibly after unlocking with a key they hold.
 func may_pass(character_id: StringName, door_id: StringName) -> Dictionary:
 	return _may_pass_from(character_id, door_id, room_of(character_id))
+
+
+## Pure route/group planning check without moving the character first.
+func may_pass_from(character_id: StringName, door_id: StringName, from_room: StringName) -> Dictionary:
+	return _may_pass_from(character_id, door_id, from_room)
 
 
 func admission(character_id: StringName, room_id: StringName) -> int:
@@ -686,6 +780,8 @@ func admission(character_id: StringName, room_id: StringName) -> int:
 ## opts: { expires_at: float (sim time, <0 = never), until_exit: bool }.
 ## Default expiry: next dawn (§7.2).
 func set_invitation(character_id: StringName, room_id: StringName, by_whom: StringName, opts: Dictionary = {}) -> void:
+	if not is_authoritative():
+		return
 	if not _invitations.has(character_id):
 		_invitations[character_id] = {}
 	_invitations[character_id][room_id] = {
@@ -698,6 +794,8 @@ func set_invitation(character_id: StringName, room_id: StringName, by_whom: Stri
 
 
 func clear_invitation(character_id: StringName, room_id: StringName) -> void:
+	if not is_authoritative():
+		return
 	if _invitations.has(character_id):
 		(_invitations[character_id] as Dictionary).erase(room_id)
 
@@ -705,6 +803,8 @@ func clear_invitation(character_id: StringName, room_id: StringName) -> void:
 ## window: { start (default now), end | duration, expected (default end-start),
 ## key_access (default true: may pass locked doors of this room during the window) }.
 func set_duty(character_id: StringName, room_id: StringName, window: Dictionary) -> void:
+	if not is_authoritative():
+		return
 	var start: float = float(window.get("start", sim_time))
 	var end: float = float(window.get("end", start + float(window.get("duration", 600.0))))
 	var rec := {
@@ -720,6 +820,8 @@ func set_duty(character_id: StringName, room_id: StringName, window: Dictionary)
 
 
 func clear_duty(character_id: StringName, room_id: StringName) -> void:
+	if not is_authoritative():
+		return
 	if _duties.has(character_id):
 		(_duties[character_id] as Dictionary).erase(room_id)
 
@@ -868,6 +970,8 @@ func posture_of(character_id: StringName) -> int:
 # ======================================================================================
 
 func knock(door_id: StringName, actor_id: StringName, opts: Dictionary = {}) -> void:
+	if not is_authoritative():
+		return
 	if not _doors.has(door_id):
 		return
 	var target := _far_side(door_id, actor_id)
@@ -1112,6 +1216,8 @@ func request_scene(scene_id: StringName, room_id: StringName, payload: Dictionar
 # ======================================================================================
 
 func advance_time(dt: float) -> void:
+	if not is_authoritative():
+		return
 	var left := dt
 	while left > 0.0:
 		var step := minf(left, max_substep)
@@ -1176,6 +1282,8 @@ func save_state() -> Dictionary:
 		}
 	return {
 		"version": SAVE_VERSION,
+		"policies": _nested_str(policy_state),
+		"local_players": _to_str_array(_local_players),
 		"sim_time": sim_time,
 		"player": String(_player_id),
 		"doors": doors,
@@ -1197,6 +1305,11 @@ func save_state() -> Dictionary:
 ## Tolerates missing keys and JSON round-trips (strings for StringNames, floats for ints).
 ## Doors not yet registered receive their state when they register.
 func load_state(data: Dictionary) -> void:
+	_door_blockers.clear()
+	policy_state = (data.get("policies", {}) as Dictionary).duplicate(true)
+	_local_players.clear()
+	for player in data.get("local_players", []):
+		_local_players.append(StringName(player))
 	var version := int(data.get("version", SAVE_VERSION))
 	if version > SAVE_VERSION:
 		push_warning("RoomsAndDoors.load_state: save version %d newer than %d" % [version, SAVE_VERSION])
@@ -1274,6 +1387,9 @@ func load_state(data: Dictionary) -> void:
 ## Simulates quitting: forget everything, including registrations.
 func reset() -> void:
 	sim_time = 0.0
+	policy_state.clear()
+	_local_players.clear()
+	_door_blockers.clear()
 	for coll in [_rooms, _doors, _door_nodes, _room_doors, _chars, _body_to_char, _keyrings,
 			_master_keys, _invitations, _duties, _pass_grants, _knock_policies, _knock_cooldown,
 			_last_knock, _pending_swings, _activities, _scenes, _discovered, _witnessed, _tiers,
@@ -1392,6 +1508,10 @@ func _resolve_knock(p: Dictionary) -> void:
 
 
 func _may_pass_from(character_id: StringName, door_id: StringName, from_room: StringName) -> Dictionary:
+	if is_instance_valid(policy_controller):
+		var check: Dictionary = policy_controller.check_pass(door_id, character_id, {"from_room": from_room})
+		if not bool(check.get("ok", false)):
+			return check
 	if not _doors.has(door_id):
 		return RAD.pass_check(false, RAD.NO_SUCH_DOOR)
 	var d: Dictionary = _doors[door_id]
@@ -1808,9 +1928,19 @@ func _unlink_door(door_id: StringName) -> void:
 func _recompute_tiers() -> void:
 	var dist := {}
 	var origin := room_of(_player_id) if _player_id != &"" else &""
-	if origin != &"" and _rooms.has(origin):
-		dist[origin] = 0
-		var queue: Array[StringName] = [origin]
+	var origins: Array[StringName] = []
+	if origin != &"":
+		origins.append(origin)
+	for actor in _local_players:
+		var player_room := room_of(actor)
+		if player_room != &"" and not origins.has(player_room):
+			origins.append(player_room)
+	if not origins.is_empty():
+		var queue: Array[StringName] = []
+		for player_room in origins:
+			if _rooms.has(player_room):
+				dist[player_room] = 0
+				queue.append(player_room)
 		while not queue.is_empty():
 			var r: StringName = queue.pop_front()
 			if int(dist[r]) >= tier_cap:
@@ -1822,7 +1952,7 @@ func _recompute_tiers() -> void:
 					queue.append(o)
 	for r in _rooms:
 		var t: int = RAD.Tier.PLAYER
-		if origin != &"":
+		if not origins.is_empty():
 			t = mini(int(dist.get(r, tier_cap)), tier_cap)
 		if int(_tiers.get(r, -1)) != t:
 			_tiers[r] = t

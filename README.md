@@ -15,6 +15,12 @@ who gets caught, and which rooms keep running while the player is elsewhere.
 A 56-second tour of the demo: [docs/media/reel.mp4](docs/media/reel.mp4). It is also on
 the [site](https://doorproblem.splatterfacegames.com).
 
+**Satire for X:** [78-second MP4](docs/media/door-problem-x.mp4),
+[script and credits](docs/media/door-problem-script.md),
+[captions](docs/media/door-problem-x.srt). Forty seconds are MiniMax H3 scenes generated
+through ai&; the gameplay portion is labeled. The satire targets human exceptionalism,
+not England's explanation of the work involved in game design.
+
 ## The door problem
 
 In 2014 Liz England wrote [The Door Problem](https://www.lizengland.com/blog/2014/04/the-door-problem/),
@@ -39,6 +45,17 @@ discipline on the team has to make a decision about it.
 
 England's post is a list of questions, not a solution. Each team answers them again for
 each game, usually one at a time, as bugs.
+
+**Try the alternatives:** choose **Door Lab** on the title screen for twelve playable
+experiments: readable/decorative/sealed entrances, manual and proximity opening,
+key/puzzle/hack/story gates, directional and view-only passages, local co-op and room
+retention, obstruction, group closure, wait/teleport transitions, body clearance,
+ally queues, hidden reinforcements, and earned rewards/timed access. These use the
+optional `DoorPolicies` layer on the same authoritative addon.
+
+[Every question and every role in the original essay](docs/door-problem-decisions.md)
+has an explicit project decision and implementation reference. This is a set of
+working design alternatives, not a claim that one manor implements every possible game.
 
 ### What this repository does about it
 
@@ -121,6 +138,29 @@ Every rule in the demo comes from the addon:
   the back stair is the other way in. Open it quietly, or she wakes up and finds you.
 - Mrs Pell's patrol closes every door she passes. If she finds a door you left ajar, it costs
   you suspicion.
+
+### Door Lab and native co-op
+
+Choose **Door Lab** from the title screen, or run `godot --path . -- --door-lab`.
+Use its experiment list and variant buttons to change the rules. P1 uses WASD/E;
+P2 uses arrows/Enter. The lab displays its controls, current room retention, progress,
+and the reason each interaction succeeds or fails. Reset restores the experiment.
+
+Native LAN: use **Host LAN** on one machine and enter its address on the other, or run:
+
+```
+godot --path . -- --door-lab --host
+godot --path . -- --door-lab --join=192.168.1.20
+```
+
+The transport uses UDP 7077. Host controls P1; the client controls P2 with WASD or arrows
+and E. The server owns movement and door decisions. The browser build offers local
+two-player experiments; ENet host/join requires a native build.
+
+`DoorPolicies` and `DoorNetwork` are optional scene nodes. Configure policies after
+registering doors; bind each connected peer to its registered actor on the server.
+The existing save format includes mutable policy progress. Reapply authored gameplay
+configuration when restoring a scene; physical threshold occupancy is rebuilt from bodies.
 
 The house is built from a data table (`demo/manor_layout.gd`): walls are generated
 around the room rectangles, with openings where the doors are. A navigation mesh is

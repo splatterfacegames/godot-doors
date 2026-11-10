@@ -20,6 +20,8 @@ extends StaticBody3D
 @export var height: float = 2.1
 @export var ajar_angle_deg: float = 22.0
 @export var open_angle_deg: float = 95.0
+## Character/prop physics layers observed by interaction and safe-close volumes.
+@export_flags_3d_physics var actor_collision_mask: int = 6
 @export var creak_stream: AudioStream
 @export var knock_stream: AudioStream
 @export var latch_stream: AudioStream
@@ -37,6 +39,8 @@ var _rendered_state: int = -1
 
 
 func _ready() -> void:
+	_interactable.collision_mask = actor_collision_mask
+	_swing_area.collision_mask = actor_collision_mask
 	_apply_size()
 	_build_placeholder_clips()
 	if creak_stream == null:
@@ -47,6 +51,8 @@ func _ready() -> void:
 		latch_stream = PlaceholderAudio.latch()
 	_swing_area.body_entered.connect(_on_swing_body_entered)
 	_swing_area.body_exited.connect(_on_swing_body_exited)
+	_interactable.body_entered.connect(_on_threshold_entered)
+	_interactable.body_exited.connect(_on_threshold_exited)
 	RoomsAndDoors.door_state_changed.connect(_on_door_state_changed)
 	RoomsAndDoors.door_used.connect(_on_door_used)
 	register_with_system()
@@ -71,6 +77,11 @@ func register_with_system() -> void:
 ## Interactable entry point. verb: toggle/open/close/ajar/knock/announce/lock/unlock/
 ## listen/peek/hold/release. Returns a Result (or {} for void actions).
 func interact(actor_id: StringName, verb: StringName = &"toggle", opts: Dictionary = {}) -> Dictionary:
+	var policies := RoomsAndDoors.policy_controller as DoorPolicies
+	if policies != null and verb in [&"toggle", &"open"]:
+		var current := RoomsAndDoors.get_door(door_id)
+		if verb == &"open" or int(current.get("state", RAD.DoorState.CLOSED)) != RAD.DoorState.OPEN:
+			return policies.request_open(door_id, actor_id, opts)
 	match verb:
 		&"toggle":
 			var st := int(RoomsAndDoors.get_door(door_id).get("state", RAD.DoorState.CLOSED))
@@ -92,6 +103,8 @@ func interact(actor_id: StringName, verb: StringName = &"toggle", opts: Dictiona
 
 ## Prompt text for the Interactable (§6.2).
 func get_prompt(actor_id: StringName) -> String:
+	if is_instance_valid(RoomsAndDoors.policy_controller):
+		return RoomsAndDoors.policy_controller.get_hint(door_id, actor_id)
 	var d := RoomsAndDoors.get_door(door_id)
 	if d.is_empty():
 		return ""
@@ -130,7 +143,8 @@ func _render(door: Dictionary, snap: bool) -> void:
 		return
 	var st := int(door["state"])
 	# AJAR blocks bodies but not sound/sight; only OPEN lets bodies through.
-	_shape.set_deferred(&"disabled", st == RAD.DoorState.OPEN)
+	var visual_only := bool(get_meta(&"visual_only", false))
+	_shape.set_deferred(&"disabled", st == RAD.DoorState.OPEN and not visual_only)
 	_label.text = "%s\n%s%s%s" % [door_id, RAD.door_state_name(st),
 			" [LOCKED]" if bool(door["locked"]) else "",
 			" held:%s" % door["held_by"] if StringName(door["held_by"]) != &"" else ""]
@@ -164,6 +178,26 @@ func _on_swing_body_exited(body: Node) -> void:
 		RoomsAndDoors.set_door_blocked(door_id, false)
 
 
+func _on_threshold_entered(body: Node) -> void:
+	var actor := RoomsAndDoors.character_id_for_body(body)
+	if actor != &"" and is_instance_valid(RoomsAndDoors.policy_controller):
+		RoomsAndDoors.policy_controller.enter_threshold(door_id, actor)
+
+
+func _on_threshold_exited(body: Node) -> void:
+	var actor := RoomsAndDoors.character_id_for_body(body)
+	if actor != &"" and is_instance_valid(RoomsAndDoors.policy_controller):
+		RoomsAndDoors.policy_controller.exit_threshold(door_id, actor)
+
+
+func apply_policy_geometry(config: Dictionary) -> void:
+	width = maxf(0.1, float(config.get("width", width)))
+	height = maxf(0.1, float(config.get("height", height)))
+	set_meta(&"visual_only", StringName(config.get("mode", "interactive")) == &"visual_only")
+	_apply_size()
+	_render(RoomsAndDoors.get_door(door_id), true)
+
+
 func _apply_size() -> void:
 	var block := _shape.shape as BoxShape3D
 	if block != null:
@@ -180,6 +214,17 @@ func _apply_size() -> void:
 		panel.position = Vector3(width * 0.5, height * 0.5, 0.0)
 	_label.position.y = height + 0.35
 	_swing_area.position = Vector3(0.0, height * 0.5, width * 0.55)
+	var swing_shape := _swing_area.get_node_or_null(^"CollisionShape3D") as CollisionShape3D
+	if swing_shape != null:
+		var swing_box := BoxShape3D.new()
+		swing_box.size = Vector3(width, height, width * 1.1)
+		swing_shape.shape = swing_box
+	_interactable.position.y = height * 0.5
+	var interaction_shape := _interactable.get_node_or_null(^"CollisionShape3D") as CollisionShape3D
+	if interaction_shape != null:
+		var interaction_box := BoxShape3D.new()
+		interaction_box.size = Vector3(width + 0.6, height + 0.1, maxf(2.4, width * 2.0))
+		interaction_shape.shape = interaction_box
 
 
 ## Placeholder open/close/ajar/knock clips driving Hinge rotation (§6.2).
