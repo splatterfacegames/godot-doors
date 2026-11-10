@@ -1,0 +1,50 @@
+{
+  "provider": "ElevenLabs",
+  "voice": "George",
+  "voice_id": "JBFqnCBsd6RMkjVDRZzb",
+  "model": "eleven_multilingual_v2",
+  "segments": [
+    {
+      "name": "shrine",
+      "seconds": 9.752381,
+      "characters": "62",
+      "request_id": "oQfRm77EkfuqzSvAS4If"
+    },
+    {
+      "name": "soul",
+      "seconds": 9.566621,
+      "characters": "61",
+      "request_id": "dzPgcEdcCjQ8y1fDyy4Y"
+    },
+    {
+      "name": "quote",
+      "seconds": 9.195102,
+      "characters": "70",
+      "request_id": "o71fuh1bfEMLYL367Na0"
+    },
+    {
+      "name": "spec",
+      "seconds": 9.055782,
+      "characters": "62",
+      "request_id": "oJv9t5N2uJRkfZYQCoAk"
+    },
+    {
+      "name": "game",
+      "seconds": 13.746213,
+      "characters": "98",
+      "request_id": "0ESwsFWKajLOnMEbuXGB"
+    },
+    {
+      "name": "goalposts",
+      "seconds": 8.962902,
+      "characters": "62",
+      "request_id": "3715tXhVbkw3lpHZhKnW"
+    },
+    {
+      "name": "end",
+      "seconds": 3.065034,
+      "characters": "20",
+      "request_id": "kuBUPQ1voc1MEp8ymX0c"
+    }
+  ]
+}

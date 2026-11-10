@@ -2,7 +2,7 @@
 
 78 seconds · 1280 × 720 · H.264 / AAC · 16:9
 
-Forty seconds (51.3%) are MiniMax H3 segments generated through the ai& API. The remaining footage is the actual Godot demo and two graphic cards. Narration is synthetic. Music is an original synthesized pizzicato bed.
+Forty seconds (51.3%) are MiniMax H3 segments generated through the ai& API. The remaining footage is the actual Godot demo and two graphic cards. Narration uses ElevenLabs George (eleven_multilingual_v2). Music is an original synthesized pizzicato bed.
 
 The satire targets human exceptionalism about programming, not the claim that game design takes work. Liz England’s original essay explains the latter.
 
